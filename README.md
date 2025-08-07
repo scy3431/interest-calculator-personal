@@ -1,47 +1,79 @@
-Interest Calculator for Joint Bank Accounts
-A simple web tool to calculate how interest should be shared between two people who have contributed different amounts to a joint bank account. It also calculates a "fairness" percentage and visualizes the data with charts.
+# 💰 Interest Calculator for Joint Bank Accounts
 
-Features
-Contribution Input: Enter each person's initial contribution and the total amount after interest.
+A simple web tool to calculate how interest should be shared between two people who have contributed different amounts to a joint bank account. It also calculates a "fairness" percentage and visualizes the data with interactive charts.
 
-Share Calculation: Determines each person's fair share based on their contribution percentage.
+## ✨ Features
 
-Fairness Check: Computes the fairness of the interest distribution.
+- **💵 Contribution Input**: Enter each person's initial contribution and the total amount after interest
+- **📊 Share Calculation**: Determines each person's fair share based on their contribution percentage
+- **⚖️ Fairness Check**: Computes the fairness of the interest distribution
+- **📈 Data Visualization**: Displays a pie chart for shares and a bar chart for contributions
+- **📤 Export Options**: Export results to a CSV file or save the charts as PNG images
+- **👁️ Custom View**: Easily show or hide the charts
 
-Data Visualization: Displays a pie chart for shares and a bar chart for contributions.
+## 🛠️ Technologies Used
 
-Export Options: Export results to a CSV file or save the charts as PNG images.
+- **HTML5** for structure
+- **CSS3** for styling
+- **JavaScript (Vanilla)** for core logic and interactivity
+- **Chart.js** for data visualization
 
-Custom View: Easily show or hide the charts.
+## 🚀 How to Use
 
-Technologies Used
-HTML5 for structure
+1. Open the `index.html` file in your web browser
+2. Enter the contributions for **Person 1** and **Person 2**, along with the **Total After Interest**
+3. Click the **"Calculate Shares"** button to see the results
+4. Use the checkboxes to toggle the visibility of the charts
+5. Click the **"Export"** buttons to save your data or charts
 
-CSS3 for styling
+## 📋 Example
 
-JavaScript (Vanilla) for core logic and interactivity
+If Person 1 contributed **$4,000**, Person 2 contributed **$6,000**, and the total after interest is **$11,500**:
 
-Chart.js for data visualization
+- **Person 1's Share**: $4,600
+- **Person 2's Share**: $6,900
+- **Fairness**: 100%
 
-How to Use
-Open the index.html file in your web browser.
+## 📥 Installation
 
-Enter the contributions for Person 1 and Person 2, along with the Total After Interest.
+**No installation is required!** Simply:
 
-Click the "Calculate Shares" button to see the results.
+1. Download the `index.html` file
+2. Open it directly in a modern web browser
+3. Start calculating interest shares
 
-Use the checkboxes to toggle the visibility of the charts.
+## 🖥️ Browser Compatibility
 
-Click the "Export" buttons to save your data or charts.
+This tool works in all modern web browsers including:
+- Google Chrome
+- Mozilla Firefox
+- Microsoft Edge
+- Safari
 
-Example
-If Person 1 contributed $4,000, Person 2 contributed $6,000, and the total after interest is $11,500:
+## 📄 File Structure
 
-Person 1's Share: $4,600
+```
+Interest-Calculator/
+├── index.html          # Main application file
+├── README.md           # This file
+└── assets/             # (if you have separate CSS/JS files)
+    ├── style.css
+    └── script.js
+```
 
-Person 2's Share: $6,900
+## 🤝 Contributing
 
-Fairness: 100%
+Feel free to enhance this project by adding:
+- Support for more than 2 people
+- Different interest calculation methods
+- Historical tracking of calculations
+- Mobile-responsive design improvements
+- Additional export formats
 
-Installation
-No installation is required. Simply download the index.html file and open it directly in a modern web browser.
+## 📄 License
+
+This project is open source and available under the MIT License.
+
+---
+
+**Happy Calculating! 💰📊**
