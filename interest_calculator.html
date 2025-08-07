@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interest Calculator for Joint Bank Accounts</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f7f7f7; margin: 0; padding: 0; }
+        .container { max-width: 400px; margin: 60px auto; background: #fff; padding: 30px 40px 40px 40px; border-radius: 10px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+        h2 { text-align: center; color: #2d3748; }
+        label { display: block; margin-top: 18px; color: #444; }
+        input[type="number"] { width: 100%; padding: 10px; margin-top: 6px; border: 1px solid #ccc; border-radius: 5px; font-size: 1em; }
+        button { width: 100%; margin-top: 24px; padding: 12px; background: #0072ce; color: #fff; border: none; border-radius: 5px; font-size: 1.1em; cursor: pointer; transition: background 0.2s; }
+        button:hover { background: #005fa3; }
+        .result { margin-top: 28px; background: #f1f8ff; padding: 18px; border-radius: 6px; font-size: 1.1em; color: #1a365d; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Interest Calculator<br>for Joint Bank Accounts</h2>
+        <form id="interestForm">
+            <label for="person1">Person 1 Contribution ($):</label>
+            <input type="number" id="person1" name="person1" min="0" step="0.01" required>
+
+            <label for="person2">Person 2 Contribution ($):</label>
+            <input type="number" id="person2" name="person2" min="0" step="0.01" required>
+
+            <label for="total">Total After Interest ($):</label>
+            <input type="number" id="total" name="total" min="0" step="0.01" required>
+
+            <button type="submit">Calculate Shares</button>
+        </form>
+        <div class="result" id="result" style="display:none;"></div>
+        <div class="result" id="fairness" style="display:none;"></div>
+        <div style="margin-top:24px;">
+            <label><input type="checkbox" id="showPie" checked> Show Pie Chart (Shares)</label><br>
+            <label><input type="checkbox" id="showBar" checked> Show Bar Chart (Contributions)</label>
+        </div>
+        <div style="margin-top:18px;">
+            <button type="button" id="exportCSV">Export CSV</button>
+            <button type="button" id="exportPiePNG">Export Pie Chart PNG</button>
+            <button type="button" id="exportBarPNG">Export Bar Chart PNG</button>
+        </div>
+        <div style="margin-top:24px;">
+            <canvas id="pieChart" style="max-width:100%;display:block;"></canvas>
+            <canvas id="barChart" style="max-width:100%;display:block;"></canvas>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        function calculateShares(person1, person2, total) {
+            const totalContribution = person1 + person2;
+            if (totalContribution === 0) return [0, 0];
+            const person1Share = (person1 / totalContribution) * total;
+            const person2Share = (person2 / totalContribution) * total;
+            return [person1Share, person2Share];
+        }
+
+        function calculateFairness(person1, person2, share1, share2, total) {
+            const totalContribution = person1 + person2;
+            if (totalContribution === 0 || total === 0) return 100;
+            const person1ContributionPct = person1 / totalContribution;
+            const person2ContributionPct = person2 / totalContribution;
+            const person1SharePct = share1 / total;
+            const person2SharePct = share2 / total;
+            // Fairness: 100% if share pct == contribution pct for both
+            const fairness = 100 - (Math.abs(person1ContributionPct - person1SharePct) + Math.abs(person2ContributionPct - person2SharePct)) * 50;
+            return Math.max(0, Math.min(100, fairness));
+        }
+
+        let pieChart, barChart;
+
+        function renderCharts(person1, person2, share1, share2) {
+            const pieCtx = document.getElementById('pieChart').getContext('2d');
+            const barCtx = document.getElementById('barChart').getContext('2d');
+            if (pieChart) pieChart.destroy();
+            if (barChart) barChart.destroy();
+            pieChart = new Chart(pieCtx, {
+                type: 'pie',
+                data: {
+                    labels: ["Person 1's Share", "Person 2's Share"],
+                    datasets: [{
+                        data: [share1, share2],
+                        backgroundColor: ['#0072ce', '#fbb034']
+                    }]
+                },
+                options: {responsive:true}
+            });
+            barChart = new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: ["Person 1", "Person 2"],
+                    datasets: [{
+                        label: 'Contribution',
+                        data: [person1, person2],
+                        backgroundColor: ['#0072ce', '#fbb034']
+                    }]
+                },
+                options: {responsive:true}
+            });
+        }
+
+        function exportCSV(person1, person2, share1, share2, fairness) {
+            const csv = `Person,Contribution,Share,Fairness\nPerson 1,${person1},${share1},${fairness}\nPerson 2,${person2},${share2},${fairness}`;
+            const blob = new Blob([csv], {type: 'text/csv'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'interest_shares.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function exportChartPNG(chart, filename) {
+            const url = chart.toBase64Image();
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+        }
+
+        document.getElementById('interestForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const person1 = parseFloat(document.getElementById('person1').value);
+            const person2 = parseFloat(document.getElementById('person2').value);
+            const total = parseFloat(document.getElementById('total').value);
+            const [share1, share2] = calculateShares(person1, person2, total);
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('result').innerHTML =
+                `<strong>Person 1's share:</strong> $${share1.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}<br>` +
+                `<strong>Person 2's share:</strong> $${share2.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+            // Fairness
+            const fairness = calculateFairness(person1, person2, share1, share2, total);
+            document.getElementById('fairness').style.display = 'block';
+            document.getElementById('fairness').innerHTML = `<strong>Fairness Percentage:</strong> ${fairness.toFixed(2)}%`;
+            renderCharts(person1, person2, share1, share2);
+        });
+
+        document.getElementById('showPie').addEventListener('change', function() {
+            document.getElementById('pieChart').style.display = this.checked ? 'block' : 'none';
+        });
+        document.getElementById('showBar').addEventListener('change', function() {
+            document.getElementById('barChart').style.display = this.checked ? 'block' : 'none';
+        });
+        document.getElementById('exportCSV').addEventListener('click', function() {
+            const person1 = parseFloat(document.getElementById('person1').value);
+            const person2 = parseFloat(document.getElementById('person2').value);
+            const total = parseFloat(document.getElementById('total').value);
+            const [share1, share2] = calculateShares(person1, person2, total);
+            const fairness = calculateFairness(person1, person2, share1, share2, total);
+            exportCSV(person1, person2, share1, share2, fairness);
+        });
+        document.getElementById('exportPiePNG').addEventListener('click', function() {
+            if (pieChart) exportChartPNG(pieChart, 'shares_pie_chart.png');
+        });
+        document.getElementById('exportBarPNG').addEventListener('click', function() {
+            if (barChart) exportChartPNG(barChart, 'contributions_bar_chart.png');
+        });
+    </script>
+</body>
+</html> 
